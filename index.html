@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Thanh Toán Quốc Tế</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-graduation-cap text-2xl text-yellow-300"></i>
+                <h1 class="font-bold text-lg md:text-xl tracking-wide">Trắc Nghiệm Thanh Toán Quốc Tế</h1>
+            </div>
+            <div id="stats-summary" class="hidden flex items-center space-x-4 text-sm font-medium">
+                <span class="bg-indigo-800 px-3 py-1 rounded-full"><i class="fa-solid fa-check text-green-400 mr-1"></i> <span id="header-correct">0</span></span>
+                <span class="bg-indigo-800 px-3 py-1 rounded-full"><i class="fa-solid fa-xmark text-red-400 mr-1"></i> <span id="header-wrong">0</span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar / Navigation Panel -->
+        <aside id="sidebar" class="lg:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col h-fit lg:sticky lg:top-20">
+            <h2 class="text-base font-semibold mb-3 text-slate-700 flex items-center">
+                <i class="fa-solid fa-list-ol mr-2 text-indigo-600"></i> Danh sách câu hỏi (80)
+            </h2>
+            <div id="section-filter" class="mb-3">
+                <select id="part-select" onchange="filterQuestionsByPart()" class="w-full text-xs p-2 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">Tất cả các phần (1 - 10)</option>
+                    <option value="1">Phần 1: Tổng quan TTQT</option>
+                    <option value="2">Phần 2: Các chủ thể tham gia</option>
+                    <option value="3">Phần 3: Vai trò của NHTM</option>
+                    <option value="4">Phần 4: SWIFT</option>
+                    <option value="5">Phần 5: Các loại điện SWIFT</option>
+                    <option value="6">Phần 6: Quản lý ngoại hối</option>
+                    <option value="7">Phần 7: Nguyên tắc sử dụng ngoại hối</option>
+                    <option value="8">Phần 8: Vãng lai và vốn</option>
+                    <option value="9">Phần 9: Câu bẫy bản chất</option>
+                    <option value="10">Phần 10: AML/CFT/Sanctions & Tình huống</option>
+                </select>
+            </div>
+            
+            <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 max-h-60 lg:max-h-96 overflow-y-auto custom-scrollbar p-1">
+                <!-- Grid buttons inserted dynamically -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                <button onclick="resetQuiz()" class="w-full py-2 px-3 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center justify-center">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> Làm lại từ đầu
+                </button>
+            </div>
+        </aside>
+
+        <!-- Question View Area -->
+        <section class="lg:col-span-3 flex flex-col">
+            
+            <!-- Question Card -->
+            <div id="question-card" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex-grow flex flex-col justify-between">
+                <div>
+                    <!-- Header Badges -->
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+                        <span id="part-title" class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                            Phần 1 — Tổng quan TTQT
+                        </span>
+                        <span id="question-number-badge" class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                            Câu 1 / 80
+                        </span>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h2 id="question-text" class="text-lg md:text-xl font-semibold text-slate-800 mb-6 leading-relaxed">
+                        Thanh toán quốc tế được hiểu phù hợp nhất là:
+                    </h2>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3 mb-6">
+                        <!-- Options generated by JS -->
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div id="explanation-box" class="hidden p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-sm leading-relaxed mb-6 animate-fade-in">
+                        <div class="font-bold mb-1 flex items-center">
+                            <i class="fa-solid fa-circle-info mr-2 text-blue-600"></i> Giải thích chi tiết:
+                        </div>
+                        <p id="explanation-text"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                    <button id="prev-btn" onclick="navigate(-1)" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-arrow-left mr-1.5"></i> Câu trước
+                    </button>
+
+                    <button id="next-btn" onclick="navigate(1)" class="px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+                        Câu tiếp <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Quiz Data & Logic -->
+    <script>
+        const rawQuestions = [
+            // PART 1
+            { id: 1, part: 1, partTitle: "Phần 1 — Tổng quan TTQT", text: "Thanh toán quốc tế được hiểu phù hợp nhất là:", options: ["Mọi giao dịch sử dụng ngoại tệ", "Việc thực hiện nghĩa vụ chi trả tiền tệ phát sinh từ các quan hệ kinh tế giữa các chủ thể ở các quốc gia khác nhau", "Mọi giao dịch giữa hai ngân hàng", "Việc chuyển tiền qua SWIFT"], answer: 1, explanation: "Thanh toán quốc tế là việc thực hiện các nghĩa vụ chi trả tiền tệ phát sinh từ các quan hệ kinh tế, thương mại, phi thương mại... giữa các tổ chức, cá nhân ở các quốc gia khác nhau." },
+            { id: 2, part: 1, partTitle: "Phần 1 — Tổng quan TTQT", text: "Đâu không phải là nguồn phát sinh phổ biến của TTQT?", options: ["Thương mại quốc tế", "Đầu tư quốc tế", "Quan hệ tài chính quốc tế", "Thanh toán VND giữa hai tài khoản trong cùng một ngân hàng tại Việt Nam"], answer: 3, explanation: "Thanh toán VND giữa hai tài khoản trong cùng một ngân hàng tại Việt Nam là giao dịch thanh toán nội địa, không có yếu tố nước ngoài." },
+            { id: 3, part: 1, partTitle: "Phần 1 — Tổng quan TTQT", text: "TTQT thường phức tạp hơn thanh toán nội địa chủ yếu vì:", options: ["Luôn phải thanh toán bằng USD", "Có nhiều đồng tiền, nhiều hệ thống pháp luật và nhiều chủ thể tham gia", "Luôn phải qua ít nhất ba ngân hàng", "Luôn sử dụng L/C"], answer: 1, explanation: "Sự phức tạp của TTQT xuất phát từ sự khác biệt về luật pháp, tập quán thương mại quốc tế, rủi ro tỷ giá do dùng nhiều đồng tiền và sự tham gia của nhiều bên ở các quốc gia khác nhau." },
+            { id: 4, part: 1, partTitle: "Phần 1 — Tổng quan TTQT", text: "Rủi ro nào có thể phát sinh đặc thù hơn trong TTQT?", options: ["Rủi ro tỷ giá", "Rủi ro quốc gia", "Rủi ro ngân hàng", "Cả A, B và C"], answer: 3, explanation: "TTQT chịu ảnh hưởng trực tiếp bởi sự biến động tỷ giá (rủi ro tỷ giá), sự thay đổi chính sách/chính trị của các quốc gia liên quan (rủi ro quốc gia) và sự rủi ro từ ngân hàng đối ứng nước ngoài." },
+            { id: 5, part: 1, partTitle: "Phần 1 — Tổng quan TTQT", text: "Một doanh nghiệp Việt Nam mua hàng của doanh nghiệp Nhật Bản. Khoản thanh toán cho lô hàng là:", options: ["TTQT", "Thanh toán nội địa", "Giao dịch vốn mặc định", "Chỉ là giao dịch ngoại hối, không phải TTQT"], answer: 0, explanation: "Đây là thanh toán nghĩa vụ tiền tệ phát sinh từ giao dịch mua bán hàng hóa quốc tế (thương mại quốc tế) giữa hai chủ thể thuộc hai quốc gia khác nhau." },
+
+            // PART 2
+            { id: 6, part: 2, partTitle: "Phần 2 — Các chủ thể tham gia", text: "Importer là:", options: ["Người xuất khẩu", "Người nhập khẩu", "Ngân hàng đại lý", "Người thụ hưởng"], answer: 1, explanation: "Importer là bên mua hàng/bên nhập khẩu trong thương mại quốc tế." },
+            { id: 7, part: 2, partTitle: "Phần 2 — Các chủ thể tham gia", text: "Exporter là:", options: ["Người bán hàng ra nước ngoài", "Người mua hàng từ nước ngoài", "Ngân hàng phát hành", "Ngân hàng trung gian"], answer: 0, explanation: "Exporter là bên bán hàng/bên xuất khẩu ra nước ngoài." },
+            { id: 8, part: 2, partTitle: "Phần 2 — Các chủ thể tham gia", text: "Beneficiary là:", options: ["Bên thụ hưởng/nhận tiền", "Bên trả tiền", "NHNN", "Correspondent Bank"], answer: 0, explanation: "Beneficiary là bên thụ hưởng - người được quyền nhận tiền theo hợp đồng hoặc phương thức thanh toán." },
+            { id: 9, part: 2, partTitle: "Phần 2 — Các chủ thể tham gia", text: "Correspondent Bank là:", options: ["Cơ quan quản lý nhà nước", "Ngân hàng có quan hệ đại lý với ngân hàng khác để hỗ trợ thanh toán", "Ngân hàng bắt buộc phải là ngân hàng trung ương", "Ngân hàng chỉ dùng cho L/C"], answer: 1, explanation: "Correspondent Bank (Ngân hàng đại lý) là ngân hàng ký kết thỏa thuận mở tài khoản và cung cấp dịch vụ ngân hàng cho ngân hàng khác nhằm thực hiện các giao dịch qua biên giới." },
+            { id: 10, part: 2, partTitle: "Phần 2 — Các chủ thể tham gia", text: "Khi hai ngân hàng không có quan hệ tài khoản trực tiếp, thành phần nào có thể hỗ trợ luân chuyển tiền?", options: ["Hải quan", "Correspondent Bank", "Doanh nghiệp logistics", "Bộ Công Thương"], answer: 1, explanation: "Correspondent Bank (Ngân hàng trung gian/đại lý có tài khoản chung) giúp kết nối và luân chuyển tiền giữa hai ngân hàng không có quan hệ đại lý trực tiếp." },
+
+            // PART 3
+            { id: 11, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "Vai trò nào sau đây thuộc NHTM trong TTQT?", options: ["Trung gian thanh toán", "Tài trợ thương mại", "Kiểm soát tuân thủ", "Cả A, B và C"], answer: 3, explanation: "NHTM đóng vai trò trung gian thực hiện lệnh thanh toán, tài trợ vốn cho doanh nghiệp XNK, đồng thời kiểm soát tuân thủ các quy định quản lý ngoại hối, AML/CFT." },
+            { id: 12, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "Vai trò nào không thuộc NHTM?", options: ["Cấp tín dụng", "Kiểm tra chứng từ", "Ban hành chính sách ngoại hối quốc gia", "Kiểm soát AML/CFT"], answer: 2, explanation: "Ban hành chính sách ngoại hối quốc gia là thẩm quyền quản lý nhà nước thuộc về Ngân hàng Trung ương (NHNN tại Việt Nam)." },
+            { id: 13, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "NHTM được coi là “chốt kiểm soát đầu tiên” vì:", options: ["NHTM trực tiếp ban hành luật", "NHTM tiếp xúc giao dịch và khách hàng, kiểm tra hồ sơ, mục đích và dấu hiệu rủi ro", "NHTM quyết định tỷ giá quốc gia", "NHTM thay thế NHNN"], answer: 1, explanation: "NHTM trực tiếp làm việc với khách hàng, trực tiếp tiếp nhận hồ sơ giao dịch nên có nhiệm vụ thẩm tra, soát xét mục đích và rủi ro trước khi thực hiện chuyển tiền." },
+            { id: 14, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "Trong một giao dịch chuyển tiền quốc tế, NHTM có thể kiểm tra:", options: ["Mục đích giao dịch", "Chứng từ", "AML/CFT và sanctions", "Tất cả các nội dung trên"], answer: 3, explanation: "NHTM có trách nhiệm kiểm tra toàn diện hợp đồng/chứng từ để xác định mục đích hợp pháp, đồng thời tra soát danh sách cấm vận (sanctions) và phòng chống rửa tiền (AML/CFT)." },
+            { id: 15, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "Một giao dịch có dấu hiệu đáng ngờ nhưng chưa vi phạm sanctions. Ngân hàng:", options: ["Không cần quan tâm", "Vẫn phải xem xét AML/CFT", "Chỉ kiểm tra nếu giao dịch bằng USD", "Chỉ cần thu thêm phí"], answer: 1, explanation: "Dù chưa vi phạm cấm vận (sanctions), nếu có dấu hiệu đáng ngờ (cấu trúc bất thường, dòng tiền không rõ bản chất), ngân hàng vẫn bắt buộc phải thực hiện các biện pháp kiểm soát AML/CFT." },
+            { id: 16, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "NHTM có thể từ chối giao dịch khi:", options: ["Giao dịch vi phạm quy định ngoại hối", "Hồ sơ không phù hợp", "Có vấn đề tuân thủ nghiêm trọng", "Cả A, B và C"], answer: 3, explanation: "NHTM có quyền và nghĩa vụ từ chối thực hiện giao dịch nếu phát hiện vi phạm pháp luật ngoại hối, hồ sơ không hợp lệ hoặc vi phạm quy định tuân thủ chống rửa tiền/cấm vận." },
+            { id: 17, part: 3, partTitle: "Phần 3 — Vai trò của NHTM", text: "Phát biểu nào đúng nhất?", options: ["NHTM chỉ chuyển tiền, không kiểm soát rủi ro", "NHTM vừa trung gian thanh toán vừa thực hiện kiểm soát tuân thủ", "NHTM chỉ kiểm soát sanctions", "NHTM có quyền thay NHNN ban hành quy định"], answer: 1, explanation: "NHTM đóng vai trò kép: thực hiện dịch vụ chuyển tiền cho khách hàng đồng thời phải đảm bảo công tác tuân thủ pháp luật và phòng ngừa rủi ro." },
+
+            // PART 4
+            { id: 18, part: 4, partTitle: "Phần 4 — SWIFT", text: "SWIFT là:", options: ["Một ngân hàng quốc tế", "Một mạng truyền thông điệp tài chính", "Một loại ngoại tệ", "Một phương thức thanh toán"], answer: 1, explanation: "SWIFT (Society for Worldwide Interbank Financial Telecommunication) là Hiệp hội viễn thông tài chính liên ngân hàng toàn cầu, là hệ thống mạng truyền thông điệp an toàn, không phải là một ngân hàng giữ tiền." },
+            { id: 19, part: 4, partTitle: "Phần 4 — SWIFT", text: "Phát biểu nào đúng nhất về SWIFT?", options: ["SWIFT trực tiếp giữ tiền của khách hàng", "SWIFT trực tiếp quyết toán tất cả giao dịch", "SWIFT truyền thông điệp tài chính giữa các tổ chức tài chính", "SWIFT chỉ dùng trong L/C"], answer: 2, explanation: "SWIFT không quản lý hay nắm giữ tài sản/tiền tệ, SWIFT chỉ cung cấp hạ tầng để trao đổi các thông điệp tài chính (Financial Messages) chuẩn hóa giữa các tổ chức." },
+            { id: 20, part: 4, partTitle: "Phần 4 — SWIFT", text: "SWIFT được thành lập vào năm:", options: ["1945", "1973", "1985", "2001"], answer: 1, explanation: "SWIFT được thành lập vào năm 1973 tại Brussels, Bỉ." },
+            { id: 21, part: 4, partTitle: "Phần 4 — SWIFT", text: "BIC/SWIFT Code thường có:", options: ["6 hoặc 8 ký tự", "8 hoặc 11 ký tự", "10 hoặc 12 ký tự", "Luôn 11 ký tự"], answer: 1, explanation: "Mã BIC (Business Identifier Code) / SWIFT Code gồm 8 ký tự (dành cho trụ sở chính) hoặc 11 ký tự (dành cho chi nhánh cụ thể)." },
+            { id: 22, part: 4, partTitle: "Phần 4 — SWIFT", text: "Trong BIC, 4 ký tự đầu thường thể hiện:", options: ["Quốc gia", "Ngân hàng", "Thành phố", "Chi nhánh"], answer: 1, explanation: "4 ký tự đầu tiên của BIC là Bank Code (Mã định danh ngân hàng)." },
+            { id: 23, part: 4, partTitle: "Phần 4 — SWIFT", text: "Hai ký tự tiếp theo sau mã ngân hàng thường thể hiện:", options: ["Loại tiền tệ", "Country Code", "Chi nhánh", "Số tài khoản"], answer: 1, explanation: "2 ký tự thứ 5 và thứ 6 là Country Code (Mã quốc gia, ví dụ: VN cho Việt Nam)." },
+            { id: 24, part: 4, partTitle: "Phần 4 — SWIFT", text: "Hai ký tự tiếp theo sau Country Code thường thể hiện:", options: ["Location Code", "Bank Code", "Currency Code", "Customer Code"], answer: 0, explanation: "2 ký tự thứ 7 và thứ 8 là Location Code (Mã vị trí/khu vực)." },
+            { id: 25, part: 4, partTitle: "Phần 4 — SWIFT", text: "Ba ký tự cuối trong BIC 11 ký tự thường dùng để:", options: ["Chỉ chi nhánh", "Chỉ quốc gia", "Chỉ đồng tiền", "Chỉ số tiền giao dịch"], answer: 0, explanation: "3 ký tự cuối (nếu có) là Branch Code dùng để xác định chi nhánh cụ thể." },
+            { id: 26, part: 4, partTitle: "Phần 4 — SWIFT", text: "BIC 8 ký tự thường xác định:", options: ["Ngân hàng + quốc gia + địa điểm", "Một tài khoản khách hàng cụ thể", "Một giao dịch cụ thể", "Một loại tiền tệ"], answer: 0, explanation: "Mã BIC 8 ký tự gồm 4 ký tự Bank code + 2 ký tự Country code + 2 ký tự Location code (trụ sở chính)." },
+            { id: 27, part: 4, partTitle: "Phần 4 — SWIFT", text: "Phát biểu nào sai?", options: ["SWIFT giúp chuẩn hóa thông điệp tài chính", "BIC giúp nhận diện tổ chức tài chính", "SWIFT là chính ngân hàng thực hiện chuyển tiền", "SWIFT hỗ trợ giao tiếp giữa các tổ chức tài chính"], answer: 2, explanation: "SWIFT không phải là ngân hàng và không thực hiện việc chuyển hay giữ vốn, nó chỉ là mạng thông tin điện tử truyền nhận điện toán." },
+
+            // PART 5
+            { id: 28, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "MT103 thường dùng cho:", options: ["Chuyển tiền khách hàng", "Chuyển tiền liên ngân hàng", "Phát hành L/C", "Nhờ thu"], answer: 0, explanation: "MT103 (Single Customer Credit Transfer) là loại điện tiêu chuẩn dùng cho chuyển tiền thanh toán khách hàng." },
+            { id: 29, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "MT202 thường gắn với:", options: ["Chuyển tiền liên ngân hàng", "Phát hành L/C", "Nhờ thu", "Chuyển tiền học phí"], answer: 0, explanation: "MT202 (General Financial Institution Transfer) được dùng để chuyển vốn/thanh toán trực tiếp giữa các tổ chức tài chính/ngân hàng với nhau." },
+            { id: 30, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "MT700 thường dùng để:", options: ["Phát hành L/C", "Chuyển tiền khách hàng", "Chuyển tiền liên ngân hàng", "Nhờ thu"], answer: 0, explanation: "MT700 (Issue of a Documentary Credit) là điện tiêu chuẩn để phát hành Thư tín dụng thương mại (L/C)." },
+            { id: 31, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "MT400 thường liên quan đến:", options: ["Nhờ thu", "Phát hành L/C", "Chuyển tiền khách hàng", "Tỷ giá"], answer: 0, explanation: "Các điện nhóm MT4xx (như MT400, MT410, MT412...) liên quan đến nghiệp vụ Nhờ thu (Collection)." },
+            { id: 32, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "Một doanh nghiệp nói “đã có MT103 tức là tiền chắc chắn đã vào tài khoản người nhận”. Nhận định nào đúng nhất?", options: ["Chính xác hoàn toàn", "Chưa chắc, MT103 là thông điệp chuyển tiền, không đồng nghĩa chắc chắn tiền đã ghi có cuối cùng", "Sai vì MT103 là L/C", "Sai vì MT103 chỉ dùng nội địa"], answer: 1, explanation: "MT103 chỉ xác nhận lệnh chuyển tiền đã được gửi đi. Tiền có thể bị treo, từ chối hoặc chặn lại ở các ngân hàng trung gian do tra soát tuân thủ, AML/CFT, sai số tài khoản..." },
+            { id: 33, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "Nếu đề hỏi “điện phát hành thư tín dụng”, đáp án phù hợp nhất là:", options: ["MT103", "MT202", "MT700", "MT400"], answer: 2, explanation: "MT700 là điện chuyên dụng phát hành Thư tín dụng (L/C)." },
+            { id: 34, part: 5, partTitle: "Phần 5 — Các loại điện SWIFT", text: "Nếu đề hỏi “customer credit transfer”, đáp án phù hợp nhất là:", options: ["MT103", "MT202", "MT400", "MT700"], answer: 0, explanation: "MT103 có tên chuẩn theo SWIFT là Single Customer Credit Transfer." },
+
+            // PART 6
+            { id: 35, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "Cơ quan quản lý nhà nước về ngoại hối ở Việt Nam là:", options: ["NHTM", "NHNN", "Bộ Công Thương", "Hải quan"], answer: 1, explanation: "Ngân hàng Nhà nước Việt Nam (NHNN) là cơ quan chịu trách nhiệm quản lý nhà nước về ngoại hối và hoạt động ngoại hối." },
+            { id: 36, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "Vai trò của NHNN bao gồm:", options: ["Ban hành và điều hành chính sách ngoại hối", "Quản lý thị trường ngoại hối", "Quản lý tỷ giá theo cơ chế áp dụng", "Cả A, B và C"], answer: 3, explanation: "NHNN thực hiện đầy đủ các chức năng quản lý nhà nước bao gồm xây dựng chính sách, quản lý thị trường, dự trữ ngoại hối và điều hành tỷ giá." },
+            { id: 37, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "NHTM trong quản lý ngoại hối chủ yếu:", options: ["Ban hành luật", "Thực hiện giao dịch được phép và kiểm soát hồ sơ khách hàng", "Quyết định tỷ giá quốc gia", "Quản lý dự trữ ngoại hối nhà nước"], answer: 1, explanation: "NHTM thực hiện kinh doanh ngoại hối trong phạm vi được NHNN cho phép và kiểm tra tính hợp pháp, hợp lệ của chứng từ khách hàng." },
+            { id: 38, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "Một giao dịch có mục đích hợp pháp nhưng chứng từ chưa đầy đủ. Ngân hàng nên:", options: ["Thực hiện ngay", "Yêu cầu bổ sung hồ sơ phù hợp", "Chỉ cần khách hàng cam kết miệng", "Không bao giờ được thực hiện"], answer: 1, explanation: "Theo pháp luật ngoại hối, ngân hàng chỉ thực hiện chuyển tiền khi chứng từ đầy đủ và hợp lệ; do đó cần yêu cầu khách hàng bổ sung chứng từ theo quy định." },
+            { id: 39, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "Một giao dịch có đủ chứng từ nhưng mục đích trái quy định. Ngân hàng nên:", options: ["Thực hiện vì chứng từ đầy đủ", "Từ chối theo quy định", "Chỉ cần báo sau", "Chuyển qua ngân hàng khác"], answer: 1, explanation: "Giao dịch có mục đích trái quy định ngoại hối/pháp luật là bất hợp pháp, ngân hàng bắt buộc phải từ chối thực hiện." },
+            { id: 40, part: 6, partTitle: "Phần 6 — Quản lý ngoại hối", text: "NHTM phát hiện giao dịch đáng ngờ. Cách xử lý phù hợp nhất là:", options: ["Bỏ qua nếu số tiền nhỏ", "Thực hiện nghĩa vụ báo cáo theo quy định", "Chỉ hỏi khách hàng miệng", "Chuyển ngay tiền đi"], answer: 1, explanation: "Khi có dấu hiệu đáng ngờ theo Luật Phòng chống rửa tiền, NHTM có nghĩa vụ báo cáo cho Cục Phòng, chống rửa tiền (NHNN) và xử lý theo quy trình tuân thủ nội bộ." },
+
+            // PART 7
+            { id: 41, part: 7, partTitle: "Phần 7 — Nguyên tắc sử dụng ngoại hối", text: "Trên lãnh thổ Việt Nam, nguyên tắc chung là:", options: ["Được tự do định giá bằng mọi ngoại tệ", "Không được niêm yết, định giá, thanh toán bằng ngoại hối trừ trường hợp được phép", "Chỉ cấm USD", "Chỉ doanh nghiệp mới được dùng ngoại tệ"], answer: 1, explanation: "Theo Pháp lệnh Ngoại hối, trên lãnh thổ Việt Nam, mọi giao dịch, thanh toán, niêm yết, quảng cáo... không được thực hiện bằng ngoại hối trừ các trường hợp ngoại lệ được quy định." },
+            { id: 42, part: 7, partTitle: "Phần 7 — Nguyên tắc sử dụng ngoại hối", text: "Hai doanh nghiệp Việt Nam muốn thanh toán bằng USD chỉ vì “hai bên thấy tiện”. Nhận định đúng nhất:", options: ["Luôn được phép", "Không mặc nhiên được phép; phải thuộc trường hợp pháp luật cho phép", "Chỉ cần ngân hàng đồng ý", "Chỉ cần hợp đồng ghi USD"], answer: 1, explanation: "Thanh toán nội địa giữa 2 cư dân tại Việt Nam bằng ngoại tệ bị cấm, trừ các trường hợp rất đặc thù theo quy định của NHNN (như thanh toán qua kho ngoại quan, kinh doanh miễn thuế...)." },
+            { id: 43, part: 7, partTitle: "Phần 7 — Nguyên tắc sử dụng ngoại hối", text: "Trường hợp nào có thể là ngoại lệ được phép sử dụng ngoại tệ nếu pháp luật cho phép?", options: ["Một số khoản chi trả cho người nước ngoài", "Giao dịch tại khu vực/đối tượng được phép", "Một số hoạt động đặc thù", "Tất cả các trường hợp trên nếu thuộc quy định pháp luật"], answer: 3, explanation: "Thông tư 32/2013/TT-NHNN có quy định chi tiết các trường hợp được phép sử dụng ngoại hối trên lãnh thổ Việt Nam (lương cho người phi cư dân, cơ quan ngoại giao, doanh nghiệp xuất khẩu...)." },
+            { id: 44, part: 7, partTitle: "Phần 7 — Nguyên tắc sử dụng ngoại hối", text: "Mục tiêu của việc hạn chế sử dụng ngoại tệ trong nội địa bao gồm:", options: ["Hỗ trợ vai trò của VND", "Hạn chế đô-la hóa", "Quản lý thị trường ngoại hối", "Cả A, B và C"], answer: 3, explanation: "Việc hạn chế sử dụng ngoại tệ giúp bảo vệ giá trị đồng Việt Nam (VND), chống tình trạng đô-la hóa nền kinh tế và tăng tính hiệu quả cho chính sách tiền tệ quốc gia." },
+            { id: 45, part: 7, partTitle: "Phần 7 — Nguyên tắc sử dụng ngoại hối", text: "Việc kiểm soát ngoại hối có liên quan đến:", options: ["Ổn định tiền tệ", "Quản lý dòng vốn", "Phòng ngừa rủi ro tài chính", "Cả A, B và C"], answer: 3, explanation: "Quản lý ngoại hối giúp điều tiết cán cân thanh toán, duy trì ổn định tỷ giá, kiểm soát luồng vốn vào/ra và chống thất thoát ngoại tệ." },
+
+            // PART 8
+            { id: 46, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Giao dịch vãng lai thường liên quan đến:", options: ["Hàng hóa, dịch vụ và chuyển tiền một chiều", "Chỉ đầu tư dài hạn", "Chỉ vay nước ngoài", "Chỉ FDI"], answer: 0, explanation: "Giao dịch vãng lai là các giao dịch giữa người cư dân và người phi cư dân không vì mục đích chuyển giao vốn, gồm thanh toán xuất nhập khẩu hàng hóa, dịch vụ, thu nhập đầu tư và chuyển tiền một chiều." },
+            { id: 47, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Giao dịch vốn thường liên quan đến:", options: ["Thanh toán hàng hóa", "Đầu tư và vay nợ", "Kiều hối", "Học phí"], answer: 1, explanation: "Giao dịch vốn bao gồm giao dịch chuyển vốn giữa người cư dân và phi cư dân trong hoạt động đầu tư trực tiếp (FDI), đầu tư gián tiếp (FII), vay và trả nợ nước ngoài..." },
+            { id: 48, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Doanh nghiệp Việt Nam thanh toán tiền nhập khẩu hàng hóa. Đây là:", options: ["Giao dịch vốn", "Giao dịch vãng lai", "FDI", "Đầu tư gián tiếp"], answer: 1, explanation: "Thanh toán hàng hóa xuất nhập khẩu là giao dịch vãng lai cơ bản." },
+            { id: 49, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Doanh nghiệp Việt Nam xuất khẩu hàng và nhận tiền. Đây là:", options: ["Giao dịch vốn", "Giao dịch vãng lai", "Vay nước ngoài", "FDI"], answer: 1, explanation: "Thu tiền từ xuất khẩu hàng hóa là giao dịch vãng lai." },
+            { id: 50, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Cá nhân chuyển học phí ra nước ngoài thường thuộc:", options: ["Giao dịch vãng lai", "Giao dịch vốn", "Đầu tư trực tiếp", "Vay nợ"], answer: 0, explanation: "Chi trả học phí, sinh hoạt phí cho du học sinh là giao dịch thanh toán dịch vụ giáo dục thuộc giao dịch vãng lai." },
+            { id: 51, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Chuyển tiền trợ cấp cho thân nhân ở nước ngoài thường gần nhất với:", options: ["Giao dịch vốn", "Giao dịch vãng lai/chuyển tiền một chiều", "FDI", "Tín dụng thương mại"], answer: 1, explanation: "Trợ cấp thân nhân là hoạt động chuyển tiền một chiều (chuyển giao chi trả không tương ứng) thuộc giao dịch vãng lai." },
+            { id: 52, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Doanh nghiệp Việt Nam đầu tư trực tiếp mở công ty ở nước ngoài là:", options: ["Giao dịch vãng lai", "Giao dịch vốn", "Thanh toán dịch vụ", "Kiều hối"], answer: 1, explanation: "Đầu tư trực tiếp ra nước ngoài làm thay đổi quyền sở hữu tài sản lâu dài là giao dịch vốn." },
+            { id: 53, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Doanh nghiệp Việt Nam mua cổ phần doanh nghiệp nước ngoài là:", options: ["Giao dịch vốn", "Giao dịch vãng lai", "Chuyển tiền một chiều", "Thanh toán hàng hóa"], answer: 0, explanation: "Mua cổ phần (đầu tư tài chính/đầu tư gián tiếp) là giao dịch vốn." },
+            { id: 54, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Doanh nghiệp Việt Nam vay vốn nước ngoài là:", options: ["Giao dịch vãng lai", "Giao dịch vốn", "Dịch vụ", "Kiều hối"], answer: 1, explanation: "Vay và trả nợ nước ngoài là giao dịch vốn." },
+            { id: 55, part: 8, partTitle: "Phần 8 — Vãng lai và vốn", text: "Yếu tố quan trọng nhất để phân biệt giao dịch vốn và vãng lai là:", options: ["Giá trị giao dịch", "Đồng tiền sử dụng", "Bản chất kinh tế của dòng tiền", "Tiền đi vào hay đi ra"], answer: 2, explanation: "Bản chất kinh tế của giao dịch (mua bán tiêu dùng/dịch vụ hay tạo ra tài sản tài chính/nghĩa vụ nợ dài hạn) quyết định phân loại vốn hay vãng lai." },
+
+            // PART 9
+            { id: 56, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Doanh nghiệp nhập khẩu một dây chuyền trị giá 5 triệu USD. Đây là:", options: ["Giao dịch vốn vì tài sản có giá trị lớn", "Giao dịch vãng lai vì bản chất là thanh toán hàng nhập khẩu", "Giao dịch vốn vì dùng USD", "Không thể phân loại"], answer: 1, explanation: "Giá trị lớn hay nhỏ không thay đổi bản chất giao dịch. Đây là thanh toán tiền hàng hóa nhập khẩu nên là giao dịch vãng lai." },
+            { id: 57, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một công ty vay USD từ nước ngoài để nhập khẩu nguyên liệu. Nếu xét riêng khoản vay:", options: ["Vãng lai vì mục đích cuối là mua hàng", "Vốn vì bản chất giao dịch là vay nợ", "Vãng lai vì dùng cho thương mại", "Không thuộc quản lý ngoại hối"], answer: 1, explanation: "Xét riêng biệt giao dịch vay vốn: việc phát sinh nghĩa vụ nợ quốc tế là một giao dịch vốn." },
+            { id: 58, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Sau đó công ty dùng số tiền vay để thanh toán tiền hàng nhập khẩu. Nếu xét riêng khoản thanh toán tiền hàng:", options: ["Giao dịch vốn", "Giao dịch vãng lai", "FDI", "Vay nợ"], answer: 1, explanation: "Xét riêng biệt giao dịch thanh toán mua nguyên liệu nhập khẩu: đây là thanh toán hàng hóa thuộc giao dịch vãng lai." },
+            { id: 59, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Hai dòng tiền ở câu 57 và 58 được phân loại khác nhau vì:", options: ["Một khoản lớn hơn khoản kia", "Phải xét bản chất từng giao dịch riêng biệt", "Một giao dịch bằng USD và một giao dịch bằng VND", "Một giao dịch trong nước và một giao dịch ngoài nước"], answer: 1, explanation: "Mỗi giao dịch kinh tế độc lập có bản chất pháp lý khác nhau (1 giao dịch vay/nợ và 1 giao dịch mua bán hàng hóa) nên phân loại theo bản chất của từng giao dịch." },
+            { id: 60, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một khoản tiền đi ra nước ngoài:", options: ["Luôn là giao dịch vốn", "Luôn là giao dịch vãng lai", "Có thể là vốn hoặc vãng lai tùy bản chất", "Không thuộc quản lý ngoại hối"], answer: 2, explanation: "Chiều chuyển tiền (ra/vào) không quyết định phân loại; phụ thuộc vào lý do chuyển tiền (trả tiền nhập khẩu -> vãng lai; chuyển tiền đầu tư -> vốn)." },
+            { id: 61, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một khoản tiền đi vào Việt Nam:", options: ["Luôn là vãng lai", "Luôn là vốn", "Có thể thuộc nhiều loại tùy bản chất", "Luôn là kiều hối"], answer: 2, explanation: "Dòng tiền vào có thể là thu tiền xuất khẩu (vãng lai), giải ngân khoản vay (vốn), góp vốn FDI (vốn) hoặc kiều hối (vãng lai)." },
+            { id: 62, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một công ty Việt Nam nhận vốn đầu tư từ nước ngoài. Đây gần nhất là:", options: ["Giao dịch vãng lai", "Giao dịch vốn", "Thanh toán dịch vụ", "Kiều hối"], answer: 1, explanation: "Nhận vốn đầu tư từ nhà đầu tư nước ngoài là giao dịch vốn." },
+            { id: 63, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một công ty Việt Nam nhận tiền cung cấp dịch vụ cho khách hàng nước ngoài. Đây là:", options: ["Giao dịch vốn", "Giao dịch vãng lai", "FDI", "Vay nợ"], answer: 1, explanation: "Thu tiền từ xuất khẩu dịch vụ là giao dịch vãng lai." },
+            { id: 64, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Một công ty Việt Nam chuyển tiền mua 30% cổ phần công ty Singapore. Đây là:", options: ["Vãng lai vì chuyển tiền một lần", "Vốn vì bản chất là đầu tư", "Vãng lai vì thanh toán cho doanh nghiệp nước ngoài", "Không phải TTQT"], answer: 1, explanation: "Chuyển tiền mua cổ phần doanh nghiệp nước ngoài mang bản chất đầu tư (sở hữu tài sản tài chính) nên là giao dịch vốn." },
+            { id: 65, part: 9, partTitle: "Phần 9 — Câu bẫy bản chất", text: "Điều nào sai?", options: ["Không thể phân loại dòng tiền chỉ dựa vào chiều đi/đến", "Không thể phân loại chỉ dựa vào số tiền lớn/nhỏ", "Mọi khoản mua tài sản đều là giao dịch vốn", "Phải nhìn bản chất kinh tế của giao dịch"], answer: 2, explanation: "Nhận định 'Mọi khoản mua tài sản đều là giao dịch vốn' là sai. Ví dụ: Mua máy móc, hàng hóa là mua tài sản cố định/vật chất phục vụ sản xuất nhưng việc thanh toán tiền mua hàng hóa đó vẫn thuộc giao dịch vãng lai." },
+
+            // PART 10
+            { id: 66, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "AML là:", options: ["Anti-Money Laundering", "Anti-Market Lending", "Automatic Money Limit", "Asset Management Law"], answer: 0, explanation: "AML đại diện cho Anti-Money Laundering (Chống rửa tiền)." },
+            { id: 67, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "CFT thường liên quan đến:", options: ["Chống tài trợ khủng bố", "Chống gian lận thuế", "Kiểm soát tỷ giá", "Tài trợ thương mại"], answer: 0, explanation: "CFT đại diện cho Countering the Financing of Terrorism (Chống tài trợ khủng bố)." },
+            { id: 68, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Sanctions screening nhằm:", options: ["Kiểm tra đối tượng/giao dịch có liên quan danh sách hạn chế/cấm vận", "Tính tỷ giá", "Kiểm tra chất lượng hàng", "Xác định Incoterms"], answer: 0, explanation: "Sanctions screening là quá trình tra soát tên chủ thể, ngân hàng, tàu biển... để phát hiện sự trùng khớp với danh sách bị cấm vận/trừng phạt quốc tế." },
+            { id: 69, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Giao dịch không trùng danh sách sanctions nhưng có cấu trúc rất bất thường. Ngân hàng:", options: ["Có thể bỏ qua", "Vẫn phải xem xét rủi ro AML/CFT", "Chỉ cần kiểm tra tỷ giá", "Không được phép hỏi thêm"], answer: 1, explanation: "Ngay cả khi không dính sanctions, một giao dịch bất thường (chia nhỏ số tiền, gom tiền phức tạp, không hợp lý về mặt kinh tế) vẫn phải bị điều tra theo quy trình AML/CFT." },
+            { id: 70, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một giao dịch hoàn toàn bình thường về hình thức nhưng người thụ hưởng thuộc đối tượng bị sanctions. Ngân hàng:", options: ["Vẫn thực hiện vì giao dịch bình thường", "Phải xử lý theo quy định sanctions áp dụng", "Chỉ cần báo khách hàng", "Chỉ từ chối nếu số tiền lớn"], answer: 1, explanation: "Vi phạm sanctions mang tính chất tuyệt đối. Nếu bên nhận thuộc danh sách trừng phạt, ngân hàng phải tạm dừng/từ chối hoặc phong tỏa theo quy định cấm vận." },
+            { id: 71, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Công ty A tại Việt Nam nhập khẩu máy móc từ Đức và thanh toán bằng EUR. Đồng thời A vay USD từ ngân hàng nước ngoài để tài trợ thương vụ. Phân loại đúng nhất là:", options: ["Cả khoản vay và khoản trả tiền hàng đều là giao dịch vốn", "Cả hai đều là giao dịch vãng lai", "Khoản vay là giao dịch vốn; khoản thanh toán hàng nhập khẩu là giao dịch vãng lai", "Khoản vay là vãng lai; khoản thanh toán hàng là vốn"], answer: 2, explanation: "Giao dịch vay vốn từ ngân hàng nước ngoài là giao dịch vốn; giao dịch thanh toán tiền máy móc cho nhà cung cấp Đức là giao dịch vãng lai." },
+            { id: 72, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một ngân hàng nhận đầy đủ chứng từ nhưng phát hiện người nhận tiền nằm trong danh sách sanctions áp dụng. Ngân hàng nên:", options: ["Thực hiện vì hồ sơ đầy đủ", "Tiếp tục xử lý theo quy định sanctions, không chỉ dựa vào chứng từ", "Chỉ báo cho khách hàng", "Không cần quan tâm vì mục đích hợp pháp"], answer: 1, explanation: "Chứng từ hợp lệ không ghi đè được luật cấm vận. Khi trùng danh sách cấm vận, ngân hàng phải dừng xử lý và tuân thủ quy trình xử lý sanctions." },
+            { id: 73, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một ngân hàng nhận MT103 từ ngân hàng nước ngoài. Điều nào có thể khẳng định chắc nhất?", options: ["Tiền đã chắc chắn vào tài khoản người thụ hưởng", "Đã có thông điệp liên quan chuyển tiền khách hàng được gửi", "Giao dịch chắc chắn hợp pháp", "Không cần kiểm tra AML/CFT nữa"], answer: 1, explanation: "Nhận điện MT103 chỉ chắc chắn rằng lệnh chuyển tiền khách hàng đã được khởi tạo và gửi qua mạng SWIFT." },
+            { id: 74, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một BIC có 8 ký tự thay vì 11. Điều này có nghĩa:", options: ["Mã không hợp lệ", "Có thể là mã nhận diện ở cấp ngân hàng/địa điểm mà không chỉ rõ chi nhánh", "Không xác định được quốc gia", "Chỉ dùng nội địa"], answer: 1, explanation: "Mã BIC 8 ký tự định danh trụ sở chính (Head Office) hoặc toàn bộ ngân hàng ở quốc gia đó mà không chỉ định rõ chi nhánh cụ thể." },
+            { id: 75, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một doanh nghiệp Việt Nam xuất khẩu hàng, nhận USD rồi đem USD đầu tư mua cổ phần công ty nước ngoài. Hai giao dịch này lần lượt là:", options: ["Vốn → vốn", "Vãng lai → vốn", "Vốn → vãng lai", "Vãng lai → vãng lai"], answer: 1, explanation: "Xuất khẩu thu tiền là giao dịch vãng lai; dùng tiền mua cổ phần doanh nghiệp nước ngoài là giao dịch vốn." },
+            { id: 76, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một khách hàng chuyển tiền sang nước ngoài để trả học phí cho con. Việc tiền đi ra nước ngoài có làm giao dịch trở thành giao dịch vốn không?", options: ["Có", "Không, vẫn phải xét bản chất là chi trả dịch vụ/chi phí học tập", "Có nếu số tiền lớn", "Có nếu dùng USD"], answer: 1, explanation: "Chiều luân chuyển tiền ra nước ngoài không tự động biến nó thành giao dịch vốn. Chi trả học phí là dịch vụ tiêu dùng cá nhân nên vẫn là giao dịch vãng lai." },
+            { id: 77, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một công ty chuyển tiền ra nước ngoài để mua 5% cổ phần một doanh nghiệp. Yếu tố nào khiến giao dịch thuộc nhóm vốn?", options: ["Tỷ lệ 5%", "Dùng ngoại tệ", "Bản chất là đầu tư vào quyền sở hữu/tài sản tài chính", "Tiền đi ra nước ngoài"], answer: 2, explanation: "Yếu tố quyết định là bản chất giao dịch: Việc mua cổ phần là hoạt động đầu tư tài chính/sở hữu tài sản." },
+            { id: 78, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một giao dịch được pháp luật cho phép nhưng ngân hàng thấy nhiều dấu hiệu đáng ngờ về dòng tiền. Phát biểu đúng nhất:", options: ["Vì giao dịch được phép nên ngân hàng không cần kiểm tra thêm", "Ngân hàng vẫn phải thực hiện nghĩa vụ AML/CFT", "Chỉ NHNN mới được kiểm tra", "Chỉ kiểm tra nếu là giao dịch vốn"], answer: 1, explanation: "Tuân thủ AML/CFT là độc lập với tính hợp pháp mục đích ban đầu. Nếu phát hiện dấu hiệu bất thường, ngân hàng phải thực hiện quy trình tra soát AML/CFT." },
+            { id: 79, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Phát biểu nào đúng nhất về mối quan hệ giữa SWIFT và ngân hàng đại lý?", options: ["SWIFT thay thế hoàn toàn ngân hàng đại lý", "SWIFT là kênh truyền thông điệp; ngân hàng đại lý có thể hỗ trợ luân chuyển/quyết toán tiền", "Hai khái niệm là một", "Ngân hàng đại lý chỉ dùng cho L/C"], answer: 1, explanation: "SWIFT đóng vai trò hạ tầng viễn thông truyền tin; còn Ngân hàng đại lý (Correspondent Bank) là tổ chức nắm giữ tài khoản tiền tệ để thực hiện thanh toán/quyết toán." },
+            { id: 80, part: 10, partTitle: "Phần 10 — AML/CFT/Sanctions & Tình huống", text: "Một khách hàng có đủ tiền và đủ chứng từ, nhưng giao dịch vi phạm quy định ngoại hối. NHTM:", options: ["Vẫn thực hiện vì khách đủ tiền", "Vẫn thực hiện vì chứng từ đầy đủ", "Không nên thực hiện giao dịch vi phạm", "Chỉ thu phí cao hơn"], answer: 2, explanation: "NHTM có trách nhiệm tuân thủ pháp luật và bắt buộc phải từ chối các giao dịch vi phạm quy định quản lý ngoại hối của Nhà nước." }
+        ];
+
+        let currentIndex = 0;
+        let userAnswers = {}; // { questionId: selectedOptionIndex }
+        let filteredQuestions = [...rawQuestions];
+
+        // Initialize App
+        document.addEventListener("DOMContentLoaded", () => {
+            renderGrid();
+            loadQuestion(0);
+            updateStats();
+        });
+
+        function filterQuestionsByPart() {
+            const selectedPart = document.getElementById("part-select").value;
+            if (selectedPart === "all") {
+                filteredQuestions = [...rawQuestions];
+            } else {
+                filteredQuestions = rawQuestions.filter(q => q.part === parseInt(selectedPart));
+            }
+            renderGrid();
+            if (filteredQuestions.length > 0) {
+                loadQuestion(0);
+            }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById("question-grid");
+            grid.innerHTML = "";
+            filteredQuestions.forEach((q, idx) => {
+                const btn = document.createElement("button");
+                btn.id = `grid-btn-${idx}`;
+                btn.className = getGridBtnClass(q, idx);
+                btn.innerText = q.id;
+                btn.onclick = () => loadQuestion(idx);
+                grid.appendChild(btn);
+            });
+        }
+
+        function getGridBtnClass(q, idx) {
+            let base = "h-8 w-full rounded text-xs font-semibold flex items-center justify-center transition border ";
+            if (idx === currentIndex) {
+                base += "ring-2 ring-indigo-600 ring-offset-1 ";
+            }
+            if (userAnswers.hasOwnProperty(q.id)) {
+                if (userAnswers[q.id] === q.answer) {
+                    return base + "bg-emerald-500 text-white border-emerald-600";
+                } else {
+                    return base + "bg-rose-500 text-white border-rose-600";
+                }
+            }
+            return base + "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200";
+        }
+
+        function loadQuestion(index) {
+            if (index < 0 || index >= filteredQuestions.length) return;
+            currentIndex = index;
+            const q = filteredQuestions[currentIndex];
+
+            // Render text
+            document.getElementById("part-title").innerText = q.partTitle;
+            document.getElementById("question-number-badge").innerText = `Câu ${q.id} / 80`;
+            document.getElementById("question-text").innerText = `${q.id}. ${q.text}`;
+
+            // Render Options
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+
+            const hasAnswered = userAnswers.hasOwnProperty(q.id);
+            const selectedOpt = userAnswers[q.id];
+
+            q.options.forEach((optText, optIdx) => {
+                const btn = document.createElement("button");
+                btn.className = "w-full text-left p-3.5 rounded-lg border text-sm font-medium transition flex items-start space-x-3 ";
+
+                if (!hasAnswered) {
+                    btn.className += "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 hover:border-slate-300";
+                    btn.onclick = () => selectOption(q.id, optIdx);
+                } else {
+                    btn.disabled = true;
+                    if (optIdx === q.answer) {
+                        btn.className += "border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold";
+                    } else if (optIdx === selectedOpt) {
+                        btn.className += "border-rose-500 bg-rose-50 text-rose-900";
+                    } else {
+                        btn.className += "border-slate-200 bg-slate-50 text-slate-400 opacity-60";
+                    }
+                }
+
+                const prefix = String.fromCharCode(65 + optIdx); // A, B, C, D
+                let badgeClass = "w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ";
+                
+                if (hasAnswered && optIdx === q.answer) {
+                    badgeClass += "bg-emerald-600 text-white";
+                } else if (hasAnswered && optIdx === selectedOpt) {
+                    badgeClass += "bg-rose-600 text-white";
+                } else {
+                    badgeClass += "bg-slate-100 text-slate-600 border border-slate-200";
+                }
+
+                btn.innerHTML = `
+                    <span class="${badgeClass}">${prefix}</span>
+                    <span class="pt-0.5 leading-relaxed">${optText}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Explanation
+            const expBox = document.getElementById("explanation-box");
+            if (hasAnswered) {
+                document.getElementById("explanation-text").innerText = q.explanation;
+                expBox.classList.remove("hidden");
+            } else {
+                expBox.classList.add("hidden");
+            }
+
+            // Update Navigation Buttons
+            document.getElementById("prev-btn").disabled = currentIndex === 0;
+            const nextBtn = document.getElementById("next-btn");
+            if (currentIndex === filteredQuestions.length - 1) {
+                nextBtn.innerText = "Hoàn thành";
+                nextBtn.onclick = () => alert("Bạn đã duyệt qua hết tất cả các câu hỏi trong phần này!");
+            } else {
+                nextBtn.innerHTML = 'Câu tiếp <i class="fa-solid fa-arrow-right ml-1.5"></i>';
+                nextBtn.onclick = () => navigate(1);
+            }
+
+            // Update Sidebar Highlight
+            renderGrid();
+        }
+
+        function selectOption(qId, optIdx) {
+            userAnswers[qId] = optIdx;
+            updateStats();
+            loadQuestion(currentIndex);
+        }
+
+        function navigate(step) {
+            loadQuestion(currentIndex + step);
+        }
+
+        function updateStats() {
+            let correct = 0;
+            let wrong = 0;
+
+            Object.keys(userAnswers).forEach(qId => {
+                const question = rawQuestions.find(q => q.id === parseInt(qId));
+                if (question) {
+                    if (userAnswers[qId] === question.answer) {
+                        correct++;
+                    } else {
+                        wrong++;
+                    }
+                }
+            });
+
+            document.getElementById("header-correct").innerText = correct;
+            document.getElementById("header-wrong").innerText = wrong;
+            document.getElementById("stats-summary").classList.remove("hidden");
+        }
+
+        function resetQuiz() {
+            if (confirm("Bạn có chắc chắn muốn xóa hết kết quả và làm lại từ đầu?")) {
+                userAnswers = {};
+                updateStats();
+                loadQuestion(0);
+            }
+        }
+    </script>
+</body>
+</html>
+```eof
+
+Tôi đã tổng hợp và tạo thành một **ứng dụng web trắc nghiệm tương tác hoàn chỉnh** với đầy đủ 80 câu hỏi từ tài liệu của bạn.
+
+### Các tính năng chính của ứng dụng:
+- **Tương tác trực tiếp:** Bấm chọn đáp án để nhận ngay kết quả (Đúng/Sai) kèm giải thích lý do chi tiết cho từng câu.
+- **Lọc theo chủ đề:** Cho phép chọn luyện tập theo từng Phần (từ Phần 1 đến Phần 10) hoặc luyện tập tất cả 80 câu.
+- **Thống kê điểm số:** Hiển thị trực quan số câu trả lời đúng/sai ngay ở thanh tiêu đề.
+- **Bảng điều hướng thông minh:** Giúp nhảy nhanh tới bất kỳ câu nào và theo dõi trạng thái đã làm.
